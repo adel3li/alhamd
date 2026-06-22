@@ -19,13 +19,14 @@ import { ConsistencyView } from './components/ConsistencyView';
 import { SettingsView } from './components/SettingsView';
 import { SpotlightTour } from './components/SpotlightTour';
 import { PrivacyPolicyView } from './components/PrivacyPolicyView';
+import { TasbihView } from './components/TasbihView';
 import { MyBlessingsView } from './components/MyBlessings/MyBlessingsView';
-import { Book, CheckCircle2, Home, Settings, User, Heart, ShieldQuestion } from 'lucide-react';
+import { Book, CheckCircle2, Home, Settings, User, Heart, ShieldQuestion, Hash } from 'lucide-react';
 import { AnimatePresence, motion } from 'motion/react';
 
 export default function App() {
   const { state, saveJournalEntry, markReflectionComplete, updateSettings } = useStore();
-  const [activeTab, setActiveTab] = useState<'home' | 'journal' | 'consistency' | 'myBlessings' | 'settings'>('home');
+  const [activeTab, setActiveTab] = useState<'home' | 'journal' | 'consistency' | 'myBlessings' | 'tasbih' | 'settings'>('home');
   const [showReflection, setShowReflection] = useState(false);
   const [showPrivacyPolicy, setShowPrivacyPolicy] = useState(false);
   const [onboarded, setOnboarded] = useState<boolean | null>(null);
@@ -67,7 +68,7 @@ export default function App() {
     
     document.addEventListener('visibilitychange', handleVisibilityChange);
     // Also recompute occasionally just in case it sits open
-    const interval = setInterval(() => setNow(new Date()), 60 * 60 * 1000); 
+    const interval = setInterval(() => setNow(new Date()), 60 * 1000); // Check every minute
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange);
@@ -271,6 +272,19 @@ export default function App() {
                 </motion.div>
             )}
 
+            {activeTab === 'tasbih' && (
+                <motion.div
+                   key="tasbih"
+                   initial={{ opacity: 0, y: 10 }}
+                   animate={{ opacity: 1, y: 0 }}
+                   exit={{ opacity: 0, scale: 0.98 }}
+                   transition={{ duration: 0.3 }}
+                   className="h-full"
+                >
+                    <TasbihView />
+                </motion.div>
+            )}
+
             {activeTab === 'settings' && (
                 <motion.div
                    key="settings"
@@ -290,6 +304,7 @@ export default function App() {
         <div className="max-w-md mx-auto flex justify-between items-center px-6 py-4">
            {[
                { id: 'home', icon: Home, label: 'الرئيسية' },
+               { id: 'tasbih', icon: Hash, label: 'مسبحة' },
                { id: 'myBlessings', icon: Heart, label: 'نِعَمي' },
                { id: 'journal', icon: Book, label: 'سجل الحمد' },
                { id: 'consistency', icon: CheckCircle2, label: 'المداومة' },

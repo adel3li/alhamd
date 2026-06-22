@@ -12,7 +12,8 @@ const defaultState: AppState = {
   firstLaunchDate: null,
   welcomeSeen: false,
   hapticReminders: false,
-  notificationsEnabled: false
+  notificationsEnabled: false,
+  tasbihCount: 0
 };
 
 interface StoreContextType {

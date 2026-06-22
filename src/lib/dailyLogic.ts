@@ -8,7 +8,11 @@ const MS_PER_DAY = 86_400_000;
  * at the same moment -> global sync. The day flips at 00:00 UTC worldwide.
  */
 export function getDayNumber(now: Date = new Date()): number {
-  return Math.floor(now.getTime() / MS_PER_DAY);
+  // To get a consistent daily index that changes exactly at local midnight:
+  // We construct a UTC date from the local year, month, and day components,
+  // then divide by MS_PER_DAY. This avoids all timezone offset and DST complications.
+  const utcMidnight = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  return Math.floor(utcMidnight / MS_PER_DAY);
 }
 
 export function blessingForDate(localDate: Date | string, allBlessings: Blessing[]): Blessing {

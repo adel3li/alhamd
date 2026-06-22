@@ -80,5 +80,6 @@ export interface AppState {
   welcomeSeen: boolean;
   hapticReminders: boolean;
   notificationsEnabled: boolean;
+  tasbihCount: number;
 }
 
