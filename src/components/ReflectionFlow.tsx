@@ -326,14 +326,31 @@ export const ReflectionFlow: React.FC<ReflectionProps> = ({ blessing, onComplete
                         onClick={handleDhikrTap}
                         className="rounded-full flex items-center justify-center relative cursor-pointer outline-none"
                     >
+                         {/* Continuous pulsing rings to indicate it's a button */}
+                         {!reducedMotion && (
+                             <>
+                                 <motion.div
+                                    className="absolute inset-0 rounded-full z-0 pointer-events-none"
+                                    animate={{ scale: [1, 1.6, 1], opacity: [0.6, 0, 0.6] }}
+                                    transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                                    style={{ border: `2px solid rgba(${arc.glow}, 0.5)` }}
+                                 />
+                                 <motion.div
+                                    className="absolute inset-0 rounded-full z-0 pointer-events-none"
+                                    animate={{ scale: [1, 1.3, 1], opacity: [0.8, 0, 0.8] }}
+                                    transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut", delay: 0.5 }}
+                                    style={{ border: `2px solid rgba(${arc.glow}, 0.6)` }}
+                                 />
+                             </>
+                         )}
                          <motion.div
-                            animate={{ scale: reducedMotion ? 1 : [1, 1.03, 1] }} 
-                            transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-                            className="rounded-full flex items-center justify-center relative select-none"
+                            animate={{ scale: reducedMotion ? 1 : [1, 1.08, 1] }} 
+                            transition={{ repeat: Infinity, duration: 2.5, ease: "easeInOut" }}
+                            className="rounded-full flex items-center justify-center relative select-none z-10"
                             style={{
-                                backgroundColor: `rgba(${arc.glow}, ${arc.str * 0.2})`,
-                                boxShadow: `0 0 ${30 * arc.size}px ${15 * arc.size}px rgba(${arc.glow}, ${arc.str * 0.15})`,
-                                border: `1px solid rgba(${arc.glow}, ${arc.str * 0.4})`,
+                                backgroundColor: `rgba(${arc.glow}, ${arc.str * 0.3})`,
+                                boxShadow: `0 0 ${30 * arc.size}px ${15 * arc.size}px rgba(${arc.glow}, ${arc.str * 0.25})`,
+                                border: `2px solid rgba(${arc.glow}, ${arc.str * 0.6})`,
                                 width: isDark ? '50px' : '60px',
                                 height: isDark ? '50px' : '60px',
                             }}
@@ -342,9 +359,9 @@ export const ReflectionFlow: React.FC<ReflectionProps> = ({ blessing, onComplete
                                {pulseKey > 0 && !reducedMotion && (
                                  <motion.div
                                    key={pulseKey}
-                                   initial={{ scale: 1, opacity: 0.5, border: `1px solid rgba(${arc.glow}, 0.6)` }}
-                                   animate={{ scale: 1.5, opacity: 0 }}
-                                   transition={{ duration: 0.8, ease: 'easeOut' }}
+                                   initial={{ scale: 1, opacity: 0.8, border: `3px solid rgba(${arc.glow}, 0.8)` }}
+                                   animate={{ scale: 1.8, opacity: 0 }}
+                                   transition={{ duration: 0.5, ease: 'easeOut' }}
                                    className="absolute inset-0 rounded-full box-border"
                                  />
                                )}

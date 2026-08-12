@@ -2,6 +2,17 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'motion/react';
 import { analytics } from '../services/analytics';
 
+// نصٌّ شرعي — منسوخ حرفيًا من مصدر معتمد (صحيح مسلم ٧٨٣ب — sunnah.com/muslim:783b).
+// لا يُعدَّل برمجيًا مطلقًا. المراجعة العلمية مطلوبة قبل الإصدار الإنتاجي
+// (بوابة الإصدار: pending_review → approved).
+export const ONBOARDING_HADITH = {
+  text: "أَحَبُّ الأَعْمَالِ إِلَى اللَّهِ تَعَالَى أَدْوَمُهَا وَإِنْ قَلَّ",
+  attribution: "رواه مسلم عن عائشة رضي الله عنها",
+  sourceRef: "Sahih Muslim 783b — https://sunnah.com/muslim:783b",
+  verifiedVerbatim: false,
+  reviewStatus: "pending_review",
+} as const;
+
 // ----------------------------------------------------------------------
 // Copy & Content Source of Truth (فصحى)
 // ----------------------------------------------------------------------
@@ -279,22 +290,37 @@ export const Onboarding: React.FC<OnboardingProps> = ({ onComplete, onSkip }) =>
                    </motion.p>
                 )}
 
-                {/* Hadith Placeholder */}
+                {/* Hadith Placeholder / Block */}
                 {screen.hasHadithPlaceholder && (
                   <motion.div 
                      variants={itemVariant}
-                     className="mt-6 w-full max-w-[280px] min-h-[80px] rounded-xl border border-dashed border-[#C8A951]/40 bg-[#2A2A46] flex items-center justify-center p-4 relative"
+                     className={`mt-6 w-full max-w-[280px] relative flex flex-col items-center justify-center ${ONBOARDING_HADITH.text ? "" : "min-h-[80px] rounded-xl border border-dashed border-[#C8A951]/40 bg-[#2A2A46] p-4"}`}
                   >
-                     {/* 
-                         verified: false 
-                         reviewStatus: "pending_review"
-                         This slot is reserved for the hadith on consistent deeds. 
-                         Do not populate this placeholder until text from a verified source is provided by a qualified scholar. 
-                     */}
-                     <span className="text-xs text-[#AEAECB]/40 italic absolute bottom-2 left-3">(مساحة للحديث الشريف)</span>
-                     <div className="w-8 h-8 rounded-full bg-[#C8A951]/10 flex items-center justify-center">
-                        <span className="text-[#C8A951] opacity-60 text-lg leading-none">« »</span>
-                     </div>
+                     {ONBOARDING_HADITH.text ? (
+                        <>
+                           <p className="font-amiri text-[#C8A951] text-center text-xl md:text-2xl leading-loose">
+                              <span className="opacity-50 ml-1">«</span>
+                              {ONBOARDING_HADITH.text}
+                              <span className="opacity-50 mr-1">»</span>
+                           </p>
+                           <p className="text-sm text-[#AEAECB] font-sans text-center mt-3">
+                              {ONBOARDING_HADITH.attribution}
+                           </p>
+                        </>
+                     ) : (
+                        <>
+                           {/* 
+                               verified: false 
+                               reviewStatus: "pending_review"
+                               This slot is reserved for the hadith on consistent deeds. 
+                               Do not populate this placeholder until text from a verified source is provided by a qualified scholar. 
+                           */}
+                           <span className="text-xs text-[#AEAECB]/40 italic absolute bottom-2 left-3">(مساحة للحديث الشريف)</span>
+                           <div className="w-8 h-8 rounded-full bg-[#C8A951]/10 flex items-center justify-center">
+                              <span className="text-[#C8A951] opacity-60 text-lg leading-none">« »</span>
+                           </div>
+                        </>
+                     )}
                   </motion.div>
                 )}
              </motion.div>

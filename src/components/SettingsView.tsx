@@ -106,6 +106,26 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ onOpenPrivacyPolicy 
                         </div>
                     </div>
 
+                    <div className="flex items-center justify-between mb-5 pb-5 border-b border-brand-textPrimary/5">
+                        <span className="font-medium text-sm">حجم الخط</span>
+                        <div className="relative">
+                            <select 
+                                value={state.textSize} 
+                                onChange={(e) => {
+                                    const newSize = e.target.value as 'normal' | 'large';
+                                    updateSettings({ textSize: newSize });
+                                    analytics.capture('text_size_changed', { size: newSize });
+                                }}
+                                className="appearance-none bg-brand-background dark:bg-brand-dark-background px-4 py-2 pr-8 rounded-xl text-brand-textPrimary dark:text-brand-dark-textPrimary text-sm font-medium border border-brand-textPrimary/10 focus:ring-2 focus:ring-brand-primary outline-none"
+                                dir="ltr"
+                            >
+                                <option value="normal">عادي</option>
+                                <option value="large">كبير</option>
+                            </select>
+                            <svg className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-brand-textSecondary pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7"></path></svg>
+                        </div>
+                    </div>
+
                     <div className="flex items-center justify-between border-b border-brand-textPrimary/5 mb-5 pb-5">
                         <div className="flex flex-col">
                             <span className="font-medium text-sm">التنبيهات اليومية</span>

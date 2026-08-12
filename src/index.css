@@ -29,3 +29,7 @@
 body {
   @apply bg-brand-background dark:bg-brand-dark-background text-brand-textPrimary dark:text-brand-dark-textPrimary font-sans;
 }
+
+html.text-size-large {
+  font-size: 112.5%;
+}

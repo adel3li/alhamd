@@ -59,6 +59,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
       document.documentElement.classList.remove('dark');
       document.body.classList.remove('dark');
     }
+
+    // Apply text size
+    if (state.textSize === 'large') {
+      document.documentElement.classList.add('text-size-large');
+    } else {
+      document.documentElement.classList.remove('text-size-large');
+    }
   }, [state]);
 
   const completeOnboarding = (time: string) => {
