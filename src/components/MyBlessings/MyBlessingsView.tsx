@@ -1,8 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { userBlessingsStore, UserBlessing, MaqsadCategory } from '../../lib/userBlessingsStore';
 import { analytics } from '../../services/analytics';
 import { MoreVertical, Heart, Plus, Trash2, Edit2, ChevronRight } from 'lucide-react';
+import { DailyAffirmationCard } from '../DailyAffirmationCard';
+import { dailyAffirmations } from '../../data/affirmations';
+import { getDayOfYear } from '../../utils';
 
 const CATEGORY_LABELS: Record<MaqsadCategory, string> = {
   'نعم_الدين': 'نعم الدين',
@@ -41,6 +44,11 @@ export const MyBlessingsView: React.FC = () => {
 
   // Toast
   const [toast, setToast] = useState('');
+
+  const [now] = useState(() => new Date());
+  const todayAffirmation = useMemo(() => {
+    return dailyAffirmations[getDayOfYear(now) % dailyAffirmations.length];
+  }, [now]);
 
   useEffect(() => {
     loadList();
@@ -192,6 +200,8 @@ export const MyBlessingsView: React.FC = () => {
                     </header>
                     
                     <div className="flex-1 overflow-y-auto px-6 py-6 pb-24">
+                        <DailyAffirmationCard affirmation={todayAffirmation} />
+                        
                         {blessings.length === 0 ? (
                             <div className="h-full flex flex-col items-center justify-center text-center max-w-sm mx-auto px-4 opacity-80 pb-20">
                                 <h2 className="text-brand-accent dark:text-brand-dark-accent font-bold text-xl mb-4">مساحتك لتدوين النِّعَم بكلماتك</h2>

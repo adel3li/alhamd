@@ -1,10 +1,72 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { useStore } from "../StoreContext";
 import { toEasternArabicNumerals } from "../utils";
+import { motion, AnimatePresence } from "motion/react";
+import { Award } from "lucide-react";
+import { haptics } from "../services/haptics";
+
+const MILESTONES = [3, 7, 14, 21, 30, 60, 90, 100, 365];
+
+const calculateStreak = (completedReflections: string[]) => {
+    const sortedDates = Array.from(new Set(completedReflections)).sort((a, b) => b.localeCompare(a));
+    if (sortedDates.length === 0) return 0;
+  
+    let currentStreak = 0;
+    let d = new Date();
+    
+    const getLocalDateStr = (date: Date) => {
+      return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+    };
+  
+    let index = 0;
+    let dateStr = getLocalDateStr(d);
+    
+    if (sortedDates[0] === dateStr) {
+      currentStreak++;
+      index++;
+      d.setDate(d.getDate() - 1);
+    } else {
+      d.setDate(d.getDate() - 1);
+      let dateStrYest = getLocalDateStr(d);
+      if (sortedDates[0] === dateStrYest) {
+        // continues
+      } else {
+        return 0; 
+      }
+    }
+  
+    while (index < sortedDates.length) {
+      let checkStr = getLocalDateStr(d);
+      if (sortedDates[index] === checkStr) {
+        currentStreak++;
+        d.setDate(d.getDate() - 1);
+        index++;
+      } else if (sortedDates[index] > checkStr) {
+        index++;
+      } else {
+        break;
+      }
+    }
+    return currentStreak;
+};
 
 export const ConsistencyView: React.FC = () => {
     const { state } = useStore();
     const completedSet = new Set(state.completedReflections);
+    
+    const streak = useMemo(() => calculateStreak(state.completedReflections), [state.completedReflections]);
+    const [showMilestone, setShowMilestone] = useState(false);
+
+    useEffect(() => {
+        if (streak > 0 && MILESTONES.includes(streak)) {
+            const lastShown = localStorage.getItem('alhamd_milestone_shown');
+            if (lastShown !== streak.toString()) {
+                setShowMilestone(true);
+                localStorage.setItem('alhamd_milestone_shown', streak.toString());
+                haptics.success();
+            }
+        }
+    }, [streak]);
     
     const { monthDays, currentMonthName, completedCount } = useMemo(() => {
         const today = new Date();
@@ -101,6 +163,53 @@ export const ConsistencyView: React.FC = () => {
                     )
                 })}
             </div>
+
+            <AnimatePresence>
+                {showMilestone && (
+                    <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[100] flex items-center justify-center p-6 bg-black/60 backdrop-blur-sm"
+                        onClick={() => setShowMilestone(false)}
+                        dir="rtl"
+                    >
+                        <motion.div 
+                            initial={{ scale: 0.8, y: 20, opacity: 0 }}
+                            animate={{ scale: 1, y: 0, opacity: 1 }}
+                            exit={{ scale: 0.8, y: 20, opacity: 0 }}
+                            transition={{ type: "spring", bounce: 0.5 }}
+                            className="bg-brand-surface dark:bg-brand-dark-surface p-8 rounded-[2rem] shadow-2xl border border-brand-accent/20 flex flex-col items-center text-center max-w-sm w-full relative overflow-hidden"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-brand-accent/10 to-transparent pointer-events-none" />
+                            
+                            <motion.div 
+                                initial={{ rotate: -180, scale: 0 }}
+                                animate={{ rotate: 0, scale: 1 }}
+                                transition={{ type: "spring", delay: 0.2, bounce: 0.6 }}
+                                className="w-24 h-24 mb-6 rounded-full bg-gradient-to-br from-[#d4af37] to-amber-600 flex items-center justify-center shadow-lg relative z-10"
+                            >
+                                <Award className="w-12 h-12 text-[#0a0c0f]" />
+                            </motion.div>
+                            
+                            <h2 className="text-2xl font-bold mb-3 text-brand-textPrimary dark:text-brand-dark-textPrimary">
+                                ما شاء الله!
+                            </h2>
+                            <p className="text-[17px] text-brand-textSecondary dark:text-brand-dark-textSecondary leading-relaxed mb-8 font-medium">
+                                لقد أتممت <span className="font-bold text-[#d4af37] mx-1">{toEasternArabicNumerals(streak)}</span> أيام متتالية من المداومة على الحمد.
+                            </p>
+                            
+                            <button
+                                onClick={() => setShowMilestone(false)}
+                                className="w-full py-3.5 rounded-xl bg-brand-textPrimary/5 hover:bg-brand-textPrimary/10 dark:bg-brand-dark-textPrimary/5 dark:hover:bg-brand-dark-textPrimary/10 text-brand-textPrimary dark:text-brand-dark-textPrimary font-bold transition-colors"
+                            >
+                                متابعة
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }

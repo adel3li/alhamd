@@ -1,12 +1,20 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useStore } from '../StoreContext';
 import { motion, AnimatePresence } from 'motion/react';
 import { RefreshCw, Heart } from 'lucide-react';
 import { haptics } from '../services/haptics';
+import { DailyDhikrCard } from './DailyDhikrCard';
+import { dailyDhikrs } from '../data/dhikr';
+import { getDayOfYear } from '../utils';
 
 export const TasbihView: React.FC = () => {
   const { state, updateSettings } = useStore();
   const [sessionCount, setSessionCount] = useState(0);
+  const [now] = useState(() => new Date());
+
+  const todayDhikr = useMemo(() => {
+    return dailyDhikrs[getDayOfYear(now) % dailyDhikrs.length];
+  }, [now]);
 
   const handleTap = () => {
     setSessionCount(prev => prev + 1);
@@ -30,9 +38,11 @@ export const TasbihView: React.FC = () => {
     <div className="flex-1 flex flex-col h-full bg-brand-background dark:bg-brand-dark-background overflow-hidden relative">
       <div className="px-6 pt-12 pb-6 z-10 text-center">
         <h1 className="text-2xl font-bold font-sans">مسبحة الحمد</h1>
-        <p className="text-sm text-brand-textSecondary dark:text-brand-dark-textSecondary mt-1">
+        <p className="text-sm text-brand-textSecondary dark:text-brand-dark-textSecondary mt-1 mb-6">
           إجمالي الحمد: {state.tasbihCount.toLocaleString('ar-EG')}
         </p>
+        
+        <DailyDhikrCard dhikr={todayDhikr} />
       </div>
 
       <div className="flex-1 flex flex-col items-center justify-center relative p-6">
