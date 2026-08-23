@@ -1,11 +1,13 @@
 import React, { useState, useMemo } from "react";
 import { useStore } from "../StoreContext";
 import { getAllBlessings } from "../data/loader";
+import { Search } from "lucide-react";
 
 export const JournalView: React.FC<{ onGoHome: () => void }> = ({ onGoHome }) => {
     const { state, deleteJournalEntry } = useStore();
     const [entryToDelete, setEntryToDelete] = useState<string | null>(null);
     const [selectedCategory, setSelectedCategory] = useState<string>("الكل");
+    const [searchQuery, setSearchQuery] = useState<string>("");
     const [expandedEntries, setExpandedEntries] = useState<Record<string, boolean>>({});
 
     const allBlessings = useMemo(() => getAllBlessings(), []);
@@ -43,6 +45,15 @@ export const JournalView: React.FC<{ onGoHome: () => void }> = ({ onGoHome }) =>
     }
 
     const filteredEntries = state.journalEntries.filter(entry => {
+        const title = entry.shortTitle || entry.blessingTitle || (entry as any).blessingShortTitle || allBlessings.find(b => b.id === entry.blessingId)?.shortTitle || "الحمدلله";
+        
+        const searchMatch = !searchQuery 
+            || entry.text.toLowerCase().includes(searchQuery.toLowerCase()) 
+            || title.toLowerCase().includes(searchQuery.toLowerCase())
+            || entry.date.toLowerCase().includes(searchQuery.toLowerCase());
+
+        if (!searchMatch) return false;
+
         if (selectedCategory === "الكل") return true;
         // Old entries might not have categoryLabel, fetch it from allBlessings if missing
         const entryCategoryLabel = entry.categoryLabel || allBlessings.find(b => b.id === entry.blessingId)?.categoryLabel || entry.category;
@@ -53,6 +64,19 @@ export const JournalView: React.FC<{ onGoHome: () => void }> = ({ onGoHome }) =>
         <div className="p-6 h-full flex flex-col max-w-md mx-auto w-full overflow-y-auto pb-24">
             <h2 className="text-2xl font-bold mb-6 pt-4">سجل الحمد</h2>
              
+            <div className="relative mb-6">
+                <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+                    <Search className="h-5 w-5 text-brand-textSecondary/50" />
+                </div>
+                <input
+                    type="text"
+                    placeholder="ابحث في سجل الحمد (كلمة، تاريخ)..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="w-full bg-brand-surface dark:bg-brand-dark-surface border border-brand-textPrimary/10 rounded-2xl py-3 pr-11 pl-4 text-brand-textPrimary dark:text-brand-dark-textPrimary focus:outline-none focus:ring-2 focus:ring-[#d4af37]/50 focus:border-[#d4af37] placeholder-brand-textSecondary/50 transition-colors text-[15px]"
+                />
+            </div>
+
             <div className="flex gap-2 overflow-x-auto shrink-0 pb-4 mb-2 -mx-6 px-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" dir="rtl">
                  {categories.map(cat => (
                      <button
@@ -99,7 +123,7 @@ export const JournalView: React.FC<{ onGoHome: () => void }> = ({ onGoHome }) =>
                 )})}
                 {filteredEntries.length === 0 && (
                      <div className="text-center py-10 text-brand-textSecondary dark:text-brand-dark-textSecondary opacity-70">
-                         لا توجد تدوينات في هذا التصنيف.
+                         {searchQuery ? "لم يتم العثور على نتائج للبحث." : "لا توجد تدوينات في هذا التصنيف."}
                      </div>
                 )}
             </div>

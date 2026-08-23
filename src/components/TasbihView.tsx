@@ -14,16 +14,16 @@ export const TasbihView: React.FC = () => {
     // Light vibration on every tap
     if (state.hapticReminders || true) {
       if ((sessionCount + 1) % 33 === 0) {
-        haptics.heavy();
+        haptics.impact('heavy');
       } else {
-        haptics.light();
+        haptics.impact('light');
       }
     }
   };
 
   const handleReset = () => {
     setSessionCount(0);
-    haptics.heavy();
+    haptics.impact('heavy');
   };
 
   return (

@@ -13,6 +13,8 @@ import { inspirations } from './data/inspirations';
 import { getDayOfYear, getIslamicDate, getTodayDateStr } from './utils';
 import { BlessingCard } from './components/BlessingCard';
 import { InspirationCard } from './components/InspirationCard';
+import { DailyDhikrCard } from './components/DailyDhikrCard';
+import { dailyDhikrs } from './data/dhikr';
 import { ReflectionFlow } from './components/ReflectionFlow';
 import { JournalView } from './components/JournalView';
 import { ConsistencyView } from './components/ConsistencyView';
@@ -108,6 +110,10 @@ export default function App() {
   const todayInspiration = useMemo(() => {
     // using day of year from `now`
     return inspirations[getDayOfYear(now) % inspirations.length];
+  }, [now]);
+
+  const todayDhikr = useMemo(() => {
+    return dailyDhikrs[getDayOfYear(now) % dailyDhikrs.length];
   }, [now]);
 
   const todayStr = getTodayDateStr(now);
@@ -209,6 +215,7 @@ export default function App() {
                     </header>
 
                     <InspirationCard inspiration={todayInspiration} />
+                    <DailyDhikrCard dhikr={todayDhikr} />
 
                     <div className="flex-1 flex flex-col items-center justify-center pb-12">
                          <h3 className="text-brand-textSecondary dark:text-brand-dark-textSecondary font-medium mb-5 text-xs flex items-center gap-2">
